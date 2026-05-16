@@ -271,7 +271,7 @@ class TestCameraSequenceBuilding:
 class TestRenderSegments:
     """Test segment render output handling."""
 
-    def test_render_segment_overwrites_existing_segment(self, tmp_path, monkeypatch):
+    def test_segment_overwrite_during_rerender(self, tmp_path, monkeypatch):
         from neonveil.steps import render as render_module
 
         run_dir = tmp_path / "run"
