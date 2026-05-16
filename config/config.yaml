@@ -1,0 +1,58 @@
+project_name: neonveil
+
+# ─── Video ────────────────────────────────────────────────────────────────────
+video:
+  duration_minutes: 120          # Target video length (2 hours)
+  resolution_x: 2560
+  resolution_y: 1440
+  fps: 30
+
+# ─── Audio ────────────────────────────────────────────────────────────────────
+audio:
+  sample_rate: 44100             # 44.1kHz — standard for music, NOT 32000
+  channels: 2                    # Stereo — mandatory for ambient music
+  encode_bitrate: "320k"         # AAC bitrate for the upload copy
+  # MusicGen model: 'small' (300M), 'medium' (1.5B), 'large' (3.3B)
+  # On 8GB VRAM: medium is safe. large may OOM on very long generations.
+  musicgen_model: "facebook/musicgen-medium"
+  # Prompt used when no theme prompts.yaml is found AND no LLM override is set.
+  fallback_prompt: "dark cinematic ambient drone, rain, distant city, slow melancholic pads, Blade Runner aesthetic"
+
+# ─── Render ───────────────────────────────────────────────────────────────────
+render:
+  engine: "BLENDER_EEVEE_NEXT"   # Correct string for Blender 4.x / 5.x
+  samples: 64                    # EEVEE samples — 64 is quality/speed sweet spot
+  use_gpu: true
+  bloom: true                    # Key to cyberpunk look
+  volumetrics: true              # Key to cyberpunk look
+  motion_blur: false             # Off for ambient — saves render time
+
+# ─── Paths (Windows defaults — update per-machine) ───────────────────────────
+paths:
+  # Blender 5.0 — update if your version or install location differs
+  blender_exe: "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe"
+  # FFmpeg — set to full path or just "ffmpeg" if it's on your system PATH
+  ffmpeg_exe: "ffmpeg"
+  themes_dir: "themes"
+  temp_dir: "temp"
+  output_dir: "output_vault"
+  runs_dir: "runs"
+
+# ─── Active theme ─────────────────────────────────────────────────────────────
+# Change this to switch themes — nothing else needs to be touched.
+# Note: --llm-prompt + --llm-model can override this automatically.
+theme: "neon_rain"
+
+# ─── Reproducibility ──────────────────────────────────────────────────────────
+seed: 42
+# Set to null to use a random seed each run:
+# seed: null
+
+# ─── Ollama defaults (can be overridden per-run via CLI) ─────────────────────
+ollama:
+  url: "http://localhost:11434/api/generate"
+  timeout_sec: 45
+  # Recommended models (install with: ollama pull <model>):
+  #   llama3:8b     — fast, good JSON adherence
+  #   mistral:7b    — good alternative
+  #   llama3:70b    — best quality, needs 48GB+ VRAM
