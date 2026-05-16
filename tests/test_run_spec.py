@@ -88,6 +88,22 @@ class TestValidation(unittest.TestCase):
         self.assertIsInstance(spec["render"]["bloom"], bool)
         self.assertIsInstance(spec["render"]["volumetrics"], bool)
 
+    def test_render_bool_strings_normalized(self):
+        spec = validate_and_normalize_spec(
+            {"render": {"bloom": "false", "volumetrics": "true"}},
+            BASE_CONFIG,
+        )
+        self.assertFalse(spec["render"]["bloom"])
+        self.assertTrue(spec["render"]["volumetrics"])
+
+    def test_render_invalid_bool_strings_fall_back_to_defaults(self):
+        spec = validate_and_normalize_spec(
+            {"render": {"bloom": "not-bool", "volumetrics": "not-bool"}},
+            BASE_CONFIG,
+        )
+        self.assertTrue(spec["render"]["bloom"])
+        self.assertTrue(spec["render"]["volumetrics"])
+
     def test_variation_strategy_defaults_present(self):
         spec = validate_and_normalize_spec({}, BASE_CONFIG)
         strategy = spec["variation_strategy"]

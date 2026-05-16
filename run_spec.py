@@ -28,6 +28,20 @@ MAX_VARIATIONS = 32
 
 # ─── Defaults ────────────────────────────────────────────────────────────────
 
+def _coerce_bool(value, default: bool) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        v = value.strip().lower()
+        if v in {"true", "1", "yes", "y", "on"}:
+            return True
+        if v in {"false", "0", "no", "n", "off"}:
+            return False
+    return default
+
+
 def _fallback_music_prompt(config: dict) -> str:
     return config.get("audio", {}).get(
         "fallback_prompt",
@@ -204,8 +218,8 @@ def validate_and_normalize_spec(
         render = render_defaults
 
     render["engine"]      = str(render.get("engine", "BLENDER_EEVEE_NEXT"))
-    render["bloom"]       = bool(render.get("bloom", True))
-    render["volumetrics"] = bool(render.get("volumetrics", True))
+    render["bloom"]       = _coerce_bool(render.get("bloom"), True)
+    render["volumetrics"] = _coerce_bool(render.get("volumetrics"), True)
     normalized["render"]  = render
 
     # ── Variation strategy ────────────────────────────────────────────────────
