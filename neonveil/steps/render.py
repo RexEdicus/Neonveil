@@ -219,8 +219,8 @@ def render_segment(
     generic_vid  = render_dir / "output_loop.mp4"
     segment_vid  = render_dir / f"segment_{segment_index:03d}.mp4"
 
-    if not dry_run and generic_vid.exists() and not segment_vid.exists():
-        generic_vid.rename(segment_vid)
+    if not dry_run and generic_vid.exists():
+        generic_vid.replace(segment_vid)
 
     return str(segment_vid)
 

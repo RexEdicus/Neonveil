@@ -266,3 +266,44 @@ class TestCameraSequenceBuilding:
         segs = _build_segments(total_frames, segment_frames, cameras, fps=1)
         assert len(segs) == 3
         assert segs[2][1] == 250      # last segment ends at total
+
+
+class TestRenderSegments:
+    """Test segment render output handling."""
+
+    def test_render_segment_overwrites_existing_segment(self, tmp_path, monkeypatch):
+        from neonveil.steps import render as render_module
+
+        run_dir = tmp_path / "run"
+        render_dir = run_dir / "render"
+        render_dir.mkdir(parents=True, exist_ok=True)
+
+        segment_file = render_dir / "segment_001.mp4"
+        segment_file.write_text("old-segment", encoding="utf-8")
+
+        def fake_run_render_step(**kwargs):
+            (render_dir / "output_loop.mp4").write_text("new-segment", encoding="utf-8")
+            return {"frames_dir": str(render_dir / "frames_seg001"), "video_path": str(render_dir / "output_loop.mp4")}
+
+        monkeypatch.setattr(render_module, "run_render_step", fake_run_render_step)
+
+        out = render_module.render_segment(
+            run_dir=run_dir,
+            blend_file=run_dir / "render" / "scene_used.blend",
+            config={},
+            segment_index=1,
+            frame_start=1,
+            frame_end=30,
+            camera="CAM_A",
+            fps=30,
+            res="1920x1080",
+            quality="balanced",
+            seed=1,
+            render_cache="rerender",
+            dry_run=False,
+            verbose=False,
+        )
+
+        assert out == str(segment_file)
+        assert segment_file.read_text(encoding="utf-8") == "new-segment"
+        assert not (render_dir / "output_loop.mp4").exists()
