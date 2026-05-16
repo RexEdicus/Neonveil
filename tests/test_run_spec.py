@@ -96,7 +96,7 @@ class TestValidation(unittest.TestCase):
         self.assertFalse(spec["render"]["bloom"])
         self.assertTrue(spec["render"]["volumetrics"])
 
-    def test_render_invalid_bool_strings_fall_back_to_defaults(self):
+    def test_render_invalid_bool_string_falls_back_to_defaults(self):
         spec = validate_and_normalize_spec(
             {"render": {"bloom": "not-bool", "volumetrics": "not-bool"}},
             BASE_CONFIG,
