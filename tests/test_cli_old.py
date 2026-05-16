@@ -285,13 +285,15 @@ class TestRenderSegments:
             frames_dir = render_dir / "frames_seg001"
             frames_dir.mkdir(parents=True, exist_ok=True)
             (render_dir / "output_loop.mp4").write_bytes(b"new-segment")
-            return {"frames_dir": str(render_dir / "frames_seg001"), "video_path": str(render_dir / "output_loop.mp4")}
+            return {"frames_dir": str(frames_dir), "video_path": str(render_dir / "output_loop.mp4")}
 
         monkeypatch.setattr(render_module, "run_render_step", fake_run_render_step)
+        blend_file = render_dir / "scene_used.blend"
+        blend_file.write_bytes(b"blend-placeholder")
 
         out = render_module.render_segment(
             run_dir=run_dir,
-            blend_file=run_dir / "render" / "scene_used.blend",
+            blend_file=blend_file,
             config={},
             segment_index=1,
             frame_start=1,
