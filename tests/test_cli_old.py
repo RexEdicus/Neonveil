@@ -279,10 +279,12 @@ class TestRenderSegments:
         render_dir.mkdir(parents=True, exist_ok=True)
 
         segment_file = render_dir / "segment_001.mp4"
-        segment_file.write_text("old-segment", encoding="utf-8")
+        segment_file.write_bytes(b"old-segment")
 
         def fake_run_render_step(**kwargs):
-            (render_dir / "output_loop.mp4").write_text("new-segment", encoding="utf-8")
+            frames_dir = render_dir / "frames_seg001"
+            frames_dir.mkdir(parents=True, exist_ok=True)
+            (render_dir / "output_loop.mp4").write_bytes(b"new-segment")
             return {"frames_dir": str(render_dir / "frames_seg001"), "video_path": str(render_dir / "output_loop.mp4")}
 
         monkeypatch.setattr(render_module, "run_render_step", fake_run_render_step)
@@ -305,5 +307,5 @@ class TestRenderSegments:
         )
 
         assert out == str(segment_file)
-        assert segment_file.read_text(encoding="utf-8") == "new-segment"
+        assert segment_file.read_bytes() == b"new-segment"
         assert not (render_dir / "output_loop.mp4").exists()
